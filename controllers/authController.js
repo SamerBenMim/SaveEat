@@ -9,11 +9,12 @@ const generateToken = id =>{
     return  jwt.sign({id},process.env.JWT_SECRET,{
           expiresIn: process.env.JWT_EXPIRES_IN
       })   
-  
   }
   
   const createSendToken = (user,statusCode,res)=>{
     const token = generateToken(user._id)
+    user.password = undefined
+    console.log("user",user)
     res.status(statusCode).json({
         status:'success',
         token,
@@ -57,7 +58,7 @@ exports.login= catchAsync(async (req,res,next)=>{
 })
 
 
-exports.protect = catchAsync( async (req,res,next)=>{ 
+exports.protect = catchAsync(async (req,res,next)=>{ 
    //1) gettibg the token and check if it's there
    let token
    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){

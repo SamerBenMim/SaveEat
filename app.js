@@ -33,21 +33,12 @@ app.use(helmet()) //protections
         req.requestTime = new Date().toISOString(); //adds time to req
         next()
     })
-    
-    // app.use('/api/v1/tours',TourRouter)
-    // app.use('/api/v1/users',UserRouter)
-   /* 
-    app.all('*',(req,res,next)=>{ // all methods get post .. & all routers // to catch errors
-        // res.status(404).json({
-            //     status:"fail",
-            //     message:`can't find ${req.originalUrl}`
-            // })
-            
+
+    app.all('*',(req,res,next)=>{ 
             const err = new Error(`can't find ${req.originalUrl}`)
             err.status='fail';
             err.statusCode= 404;
-            next(err); // if we pass anything to next it is an error it will neglegt other middlewares  and goes to Error middlware
+            next(err); 
         })
-        */
-//app.use(globalErrorHandler)
+        
     module.exports = app;
