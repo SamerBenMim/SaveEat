@@ -5,6 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp') //http params pollution.
 const morgan = require('morgan')
+const UserRouter = require('./routes/userRoutes')
 app.use(helmet()) //protections
 
 
@@ -24,6 +25,10 @@ app.use(helmet()) //protections
     })) 
 
 
+    app.use('/api/users',UserRouter)
+    app.use('/api/testRoute',UserRouter) 
+
+    
     app.use((req,res,next)=>{
         req.requestTime = new Date().toISOString(); //adds time to req
         next()
