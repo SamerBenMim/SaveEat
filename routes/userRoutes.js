@@ -8,7 +8,7 @@ router.post('/signup',signup)
 router.post('/login',login)
 router.get('/test',protect,(req,res,next)=>{
     res.status(200).json({
-        status:'success',
+            status:'success',
         data:"test auth" }
         )
 })
