@@ -1,4 +1,5 @@
 const catchAsync = require("./../utils/catchAsync")
+const {promisify} = require('util');
 
 
 exports.protect = catchAsync(async (req,res,next)=>{ 
