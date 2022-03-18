@@ -20,8 +20,11 @@ var server = app.listen(process.env.PORT||3000,()=>{
     console.log('app running on port '+ process.env.PORT);
 });
 
-const DB = process.env.DATABASE.replace('<PASSWORD>',process.env.DATABASE_PASSWORD)
-mongoose.connect(DB).then(() =>{
+
+
+
+const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD)
+mongoose.connect(DB).then(() => {
     console.log("db connexion successful !!");
 })
 
@@ -30,3 +33,5 @@ process.on('unhandledRejection',err =>{
     server.close(()=>{
         process.exit(1); 
        }) })
+
+
