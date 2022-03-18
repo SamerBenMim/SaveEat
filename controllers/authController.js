@@ -57,7 +57,7 @@ exports.signup = catchAsync(async(req, res, next) => {
         }
     });
 
-
+    console.log("*",acsessToken,"*")
     return res.status(200).send(acsessToken + "\nEmail Sent");
 });
 
