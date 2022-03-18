@@ -38,9 +38,10 @@ const userSchema = new mongoose.Schema({
 
     },
 
-    passwordChangedAt: Date,
+   // passwordChangedAt: Date,
     PasswordResetToken:String,
     PasswordResetExpires: Date,
+
     active:{
         type:Boolean,
         default:true,
@@ -61,5 +62,20 @@ userSchema.methods.correctPassword= async function(candidatePassword,userPasswor
     return await bcrypt.compare(candidatePassword,userPassword)//compares password even 1 is a hash and 2 is a string
    }
 
+userSchema.methods.createPasswordResetToken=function(){
+    const resetToken = crypto.randomBytes(32).toString('hex');//create random token
+    this.PasswordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+    //console.log({resetToken},this.PasswordResetToken);
+
+    this.PasswordResetExpires=Date.now()+10*60*1000; 
+    return resetToken; 
+}
+
+
+   
 const User = mongoose.model('User',userSchema)
 module.exports = User;

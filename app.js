@@ -6,39 +6,24 @@ const xss = require('xss-clean')
 const hpp = require('hpp') //http params pollution.
 const morgan = require('morgan')
 const UserRouter = require('./routes/userRoutes')
-app.use(helmet()) //protections
 
+app.use(helmet())
+app.use(express.json({ limit:'10kb'})) 
+app.use(mongoSanitize()) /
+app.use(xss()) 
+app.use(hpp({whitelist:[]})) 
 
-    //dev logging
-    if( (process.env.NODE_ENV==='development') ) app.use(morgan('dev'))
+app.use((req,res,next)=>{req.requestTime = new Date().toISOString(); next()})
 
-    //body Parser
-    app.use(express.json({ limit:'10kb'})) 
-    
-    //data sanitization against nosql query injection && against xss
-    app.use(mongoSanitize()) // clean req from $ and . ====>try yo login without providing an email instead use a query injection {"$gt":""} //alawas true 
-   
-    app.use(xss()) //clean  user input from html which may contain javascript 
-    //prevent params pollution
-    app.use(hpp({          
-        whitelist:[]
-    })) 
+if( (process.env.NODE_ENV==='development') ) app.use(morgan('dev'))
 
-
-    app.use('/api/users',UserRouter)
-    app.use('/api/testRoute',UserRouter) 
-
-    
-    app.use((req,res,next)=>{
-        req.requestTime = new Date().toISOString(); //adds time to req
-        next()
+app.use('/api/users',   UserRouter)
+app.use('/api/testRoute',UserRouter) 
+app.all('*',(req,res,next)=>{ 
+    const err = new Error(`can't find ${req.originalUrl}`)
+    err.status='fail';
+    err.statusCode= 404;
+    next(err); 
     })
-
-    app.all('*',(req,res,next)=>{ 
-            const err = new Error(`can't find ${req.originalUrl}`)
-            err.status='fail';
-            err.statusCode= 404;
-            next(err); 
-        })
         
-    module.exports = app;
+module.exports = app;
