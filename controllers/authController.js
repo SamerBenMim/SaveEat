@@ -6,7 +6,6 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const BlacklistedTokens = require('../models/BlacklistedTokensModel');
-
 const createSendToken = (user, statusCode, res) => {
     const token = user.generetaAuthToken();
     user.password = undefined
@@ -24,11 +23,10 @@ exports.signup = catchAsync(async(req, res, next) => {
     const user = new User(
         _.pick(req.body, ['email', 'password'])
     );
-    const acsessToken = user.generetaAccessToken();
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
     user.set({ authCode: code });
-    await user.save();
+    const acsessToken = user.generetaAccessToken(code);
     var transporter = nodemailer.createTransport(smtpTransport({
         service: 'gmail',
         host: 'smtp.gmail.com',
@@ -54,16 +52,21 @@ exports.signup = catchAsync(async(req, res, next) => {
 });
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
-    const user = req.user;
-    if (user.authCode == code) {
-        token = req.headers.access.split(' ')[1];
+    const decoded = req.decoded;
+    if (decoded.authCode == code) {
+        accessToken = req.headers.access.split(' ')[1];
         const blackList = new BlacklistedTokens({
-            token: token
+            token: accessToken
         });
         await blackList.save();
+        const user = new User(
+            _.pick(req.decoded, ['email', 'password'])
+        );
+        await user.save();
+        const token = user.generetaAuthToken();
         return res
             .status(200).send(
-                "Successfully logged in", token);
+                "Successfully logged in \n", token);
     } else {
         res.send("invalid code");
     }
