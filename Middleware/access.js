@@ -20,8 +20,7 @@ exports.access = catchAsync(async(req, res, next) => {
     }
     //3) send user and blacklist token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
-    user = await User.findById(decoded._id).select("-password");
-    req.user = user;
+    req.decoded = decoded;
     next();
 
 });

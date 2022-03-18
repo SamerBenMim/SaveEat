@@ -26,8 +26,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
         select: false
-    },
-    authCode: String
+    }
 
 })
 userSchema.pre('save', async function(next) {
@@ -48,8 +47,8 @@ userSchema.methods.generetaAuthToken = function() {
     });
     return token;
 }
-userSchema.methods.generetaAccessToken = function() {
-    const token = jwt.sign({ _id: this._id, role: this.role, type: "access" }, process.env.JWT_SECRET, {
+userSchema.methods.generetaAccessToken = function(code) {
+    const token = jwt.sign({ _id: this._id, role: this.role, email: this.email, password: this.password, authCode: code, type: "access" }, process.env.JWT_SECRET, {
         expiresIn: '300s'
     });
     return token;
