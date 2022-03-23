@@ -64,9 +64,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
         );
         await user.save();
         const token = user.generetaAuthToken();
-        return res
-            .status(200).send(
-                "Successfully logged in \n", token);
+        res.status(200).send(token + "\nEmail Sent");
     } else {
         res.send("invalid code");
     }
