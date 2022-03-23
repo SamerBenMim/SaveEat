@@ -2,32 +2,21 @@ const express = require("express");
 const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
-const hpp = require('hpp') //http params pollution.
+const hpp = require('hpp')
 const morgan = require('morgan')
 const UserRouter = require('./routes/userRoutes')
+const app = express(); 
 
-const app = express(); // add methods to app
-app.use(helmet()) //protections
+app.use(helmet()) 
+app.use(express.json({ limit:'10kb'})) 
+app.use(mongoSanitize()) /
+app.use(xss()) 
+app.use(hpp({whitelist:[]})) 
+app.use(express.urlencoded({extended: true}));
+app.use((req,res,next)=>{req.requestTime = new Date().toISOString(); next()})
 
 
-//dev logging
 if ((process.env.NODE_ENV === 'development')) app.use(morgan('dev'))
-
-//body Parser
-app.use(express.urlencoded({
-    extended: true
-}));
-app.use(express.json({ limit: '10kb' }))
-
-//data sanitization against nosql query injection && against xss
-app.use(mongoSanitize()) // clean req from $ and . ====>try yo login without providing an email instead use a query injection {"$gt":""} //alawas true 
-
-app.use(xss()) //clean  user input from html which may contain javascript 
-    //prevent params pollution
-app.use(hpp({
-    whitelist: []
-}))
-
 
 app.use('/api/users', UserRouter)
 
