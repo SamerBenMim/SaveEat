@@ -2,6 +2,7 @@ const catchAsync = require("./../utils/catchAsync");
 const User = require('./../models/userModel')
 const jwt = require('jsonwebtoken')
 const AppError = require('./../utils/appError')
+const _ = require('lodash');
 const { promisify } = require('util');
 const BlacklistedTokens = require('../models/BlacklistedTokensModel');
 
@@ -20,7 +21,7 @@ exports.access = catchAsync(async(req, res, next) => {
     }
     //3) send user and blacklist token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
-    req.decoded = decoded;
+    req.decoded = _.pick(decoded, ['email', 'role', '_id']);
     next();
 
 });
