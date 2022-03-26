@@ -53,7 +53,6 @@ userSchema.post('save', async function(next) {
         if (this.verified === false) {
             await User.deleteOne({ email: this.email });
         }
-        next()
     }, 300000)
 })
 

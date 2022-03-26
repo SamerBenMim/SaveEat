@@ -30,7 +30,7 @@ const createSendToken = (user, statusCode, res) => {
 }
 
 exports.signup = catchAsync(async(req, res, next) => {
-    const user = new User(
+    let user = new User(
         _.pick(req.body, ['email', 'password'])
     );
     userExist = await User.findOne({ 'email': user.email });
