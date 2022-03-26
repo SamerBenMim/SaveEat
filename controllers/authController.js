@@ -43,7 +43,8 @@ exports.signup = catchAsync(async(req, res, next) => {
     }
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
-    user.set({ authCode: code });
+    user.set({ code: code });
+    await user.save();
     const acsessToken = user.generetaAccessToken(code);
     var transporter = nodemailer.createTransport(smtpTransport({
         service: 'gmail',
@@ -68,7 +69,7 @@ exports.signup = catchAsync(async(req, res, next) => {
             })
         }
     });
-
+    user = _.pick(user, ['email', 'role', '_id']);
     return res.status(200).json({
         status: 'success',
         acsessToken,
@@ -82,17 +83,15 @@ exports.signup = catchAsync(async(req, res, next) => {
 
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
-    const decoded = req.decoded;
-    if (decoded.authCode == code) {
+    user = await User.findOne({ 'email': req.decoded.email });
+    if (user.code == code) {
         accessToken = req.headers.access.split(' ')[1];
         const blackList = new BlacklistedTokens({
             token: accessToken
         });
+
+        await User.updateOne({ _id: user._id, email: user.email }, { verified: true }, { returnOriginal: false });
         await blackList.save();
-        const user = new User(
-            _.pick(req.decoded, ['email', 'password'])
-        );
-        await user.save();
         const token = user.generetaAuthToken();
         res.status(200).json({
             status: 'success',
