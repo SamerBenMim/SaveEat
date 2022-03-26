@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const {signup,forgotPassword,login,resetPassword,verifyAccount} = require('../controllers/authController')
-const {protect} =require('./../middlewares/protection')
 const {getAllUsers,getUser} = require('../controllers/userController')
 const { auth } = require('../Middleware/auth')
 const { access } = require('../Middleware/access')
