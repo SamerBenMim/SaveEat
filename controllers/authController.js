@@ -37,26 +37,20 @@ exports.signup = catchAsync(async(req, res, next) => {
     var code = crypto.randomBytes(6).toString('hex');
     user.set({ authCode: code });
     const acsessToken = user.generetaAccessToken(code);
-    var transporter = nodemailer.createTransport(smtpTransport({
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        auth: {
-            user: 'lilithsuccubus04@gmail.com',
-            pass: 'lilithhellwrath1204'
-        }
-    }));
-    var mailOptions = {
-        from: 'lilithsuccubus04@gmail.com',
-        to: user.email,
-        subject: 'Verification Email',
-        text: code
-    };
-    transporter.sendMail(mailOptions, function(error) {
-        if (error) {
-            res.send("Error sending email");
-        }
-    });
 
+
+    try{
+        await sendEmail({
+            email:user.email,
+            subject:'Verification Email (valid for 5 min)',
+            text:code,
+            receiver : user.name
+        }) 
+
+    }catch(err){
+
+        return next(new AppError("there was an error sending the email. Try again later !",500))
+    }
     console.log("*",acsessToken,"*")
     return res.status(200).send(acsessToken + "\nEmail Sent");
 });
@@ -65,6 +59,7 @@ exports.signup = catchAsync(async(req, res, next) => {
 
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
+    
     const decoded = req.decoded;
     if (decoded.authCode == code) {
         accessToken = req.headers.access.split(' ')[1];
@@ -77,10 +72,16 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
         );
         await user.save();
         const token = user.generetaAuthToken();
-        res.status(200).send(token + "\nEmail Sent");
-    } else {
-        res.send("invalid code");
+        res.status(200).json({
+            status: 'success',
+            token,
+            message: "You are logged in !"
+            
+        })
     }
+        else {
+        res.send("invalid code");
+         }
 });
 
 

@@ -24,6 +24,9 @@ exports.auth = catchAsync(async(req, res, next) => {
     //ACCESS TO PROTECTED ROUTE
     user = await User.findById(decoded._id).select("-password");
     req.user = user;
-
+    const blackList = new BlacklistedTokens({
+        token: token
+    });
+    await blackList.save();
     next();
 });
