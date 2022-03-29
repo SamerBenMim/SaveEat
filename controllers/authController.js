@@ -45,7 +45,7 @@ exports.signup = catchAsync(async(req, res, next) => {
     var code = crypto.randomBytes(6).toString('hex');
     user.set({ code: code });
     await user.save();
-    const acsessToken = user.generetaAccessToken(code);
+    const accessToken = user.generetaAccessToken(code);
     var transporter = nodemailer.createTransport(smtpTransport({
         service: 'gmail',
         host: 'smtp.gmail.com',
@@ -72,7 +72,7 @@ exports.signup = catchAsync(async(req, res, next) => {
     user = _.pick(user, ['email', 'role', '_id']);
     return res.status(200).json({
         status: 'success',
-        acsessToken,
+        accessToken,
         data: {
             user
         }
@@ -103,8 +103,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
     } else {
         res.json({
             status: 'error',
-            error: "Wrong code"
-
+            error: "Wrong code !"
         });
     }
 });

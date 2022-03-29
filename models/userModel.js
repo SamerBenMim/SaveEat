@@ -3,7 +3,6 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken');
-const { stringify } = require('querystring');
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
