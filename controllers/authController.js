@@ -7,6 +7,9 @@ const _ = require('lodash');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const BlacklistedTokens = require('../models/BlacklistedTokensModel');
+const facebookStrategy = require("passport-facebook").Strategy
+const passport = require('passport')
+
 
 const generateToken = id => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -45,30 +48,42 @@ exports.signup = catchAsync(async(req, res, next) => {
     var code = crypto.randomBytes(6).toString('hex');
     user.set({ code: code });
     await user.save();
-    const accessToken = user.generetaAccessToken(code);
-    var transporter = nodemailer.createTransport(smtpTransport({
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        auth: {
-            user: 'lilithsuccubus04@gmail.com',
-            pass: 'lilithhellwrath1204'
-        }
-    }));
-    var mailOptions = {
-        from: 'lilithsuccubus04@gmail.com',
-        to: user.email,
-        subject: 'Verification Email',
-        text: code
-    };
-    transporter.sendMail(mailOptions, function(error) {
-        if (error) {
-            res.json({
-                status: 'error',
-                error: "We couldn't send you a verification code try again"
+    const acsessToken = user.generetaAccessToken(code);
+    // var transporter = nodemailer.createTransport(smtpTransport({
+    //     service: 'gmail',
+    //     host: 'smtp.gmail.com',
+    //     auth: {
+    //         user: 'lilithsuccubus04@gmail.com',
+    //         pass: 'lilithhellwrath1204'
+    //     }
+    // }));
+    // var mailOptions = {
+    //     from: 'lilithsuccubus04@gmail.com',
+    //     to: user.email,
+    //     subject: 'Verification Email',
+    //     text: code
+    // };
+    // transporter.sendMail(mailOptions, function(error) {
+    //     if (error) {
+    //         res.json({
+    //             status: 'error',
+    //             error: "We couldn't send you a verification code try again"
 
-            })
-        }
-    });
+    //         })
+    //     }
+    // });
+    try{
+        await sendEmail({
+            email:user.email,
+            subject:'Verification Email (valid for 5 min)',
+            message:code,
+        }) 
+
+    }catch(err){
+
+        return next(new AppError("there was an error sending the verification code. Try again later !",500))
+    }
+   
     user = _.pick(user, ['email', 'role', '_id']);
     return res.status(200).json({
         status: 'success',
@@ -95,6 +110,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
         const token = user.generetaAuthToken();
         res.status(200).json({
             status: 'success',
+            message : 'your account is verified', 
             token,
             data: {
                 user
@@ -189,3 +205,26 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
     }
 
 })
+
+
+
+
+
+// const loginFacebook = function (req, res, next) {
+//     passport.authenticate('facebook', { session: false }, (err, user, info) => {
+//       // Decide what to do on authentication
+//       if (err || !user) {
+//         return res.redirect( '/login?error=' + info.message)
+//       }
+//       req.login(user, { session: false }, err => {
+//         if (err) {
+//           res.status(400).send({ err });
+//         }
+//         var payload = { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+//         const token = jwt.sign(payload, process.env.JWT_SECRET);
+//         var cookiePayload = { user, token }
+//         res.cookie('auth', JSON.stringify(cookiePayload));
+//         res.redirect('/success')
+//       })
+//     })(req, res, next)
+//   }
