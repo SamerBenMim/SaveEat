@@ -83,10 +83,11 @@ exports.signup = catchAsync(async(req, res, next) => {
 
         return next(new AppError("there was an error sending the verification code. Try again later !",500))
     }
+   
     user = _.pick(user, ['email', 'role', '_id']);
     return res.status(200).json({
         status: 'success',
-        acsessToken,
+        accessToken,
         data: {
             user
         }
@@ -118,8 +119,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
     } else {
         res.json({
             status: 'error',
-            error: "Wrong code"
-
+            error: "Wrong code !"
         });
     }
 });
@@ -132,7 +132,7 @@ exports.login = catchAsync(async(req, res, next) => {
         return next(new AppError('Please provide email and password', 400)); // return=>to make sure that the fn finishes 
     }
     //2) check if user exist
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email: email, verified: true }).select('+password')
         //3) check if pass is correct 
     if (!user || !await user.correctPassword(password, user.password)) {
         return next(new AppError('Incorrect email or password', 401))
