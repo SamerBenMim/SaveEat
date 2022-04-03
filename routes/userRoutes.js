@@ -1,4 +1,6 @@
 const express = require('express')
+const dotenv=require('dotenv'); 
+
 const router = express.Router();
 const {signup,forgotPassword,login,resetPassword,verifyAccount,fb_auth,fb_redirect} = require('../controllers/authController')
 const {getAllUsers,getUser} = require('../controllers/userController')
@@ -8,6 +10,7 @@ const facebookStrategy = require("passport-facebook").Strategy
 const passport = require('passport')
 const User = require('./../models/userModel');
 const { cloneWith } = require('lodash');
+dotenv.config({path :'./config.env'})
 
 router.post('/signup', signup)
 router.get('/auth/facebook', passport.authenticate('facebook', { session: false, scope : 'email'}))
@@ -28,11 +31,9 @@ router.post('/verifyAccount', access, verifyAccount)
 router.post('/forgotPassword',forgotPassword)
 router.patch('/resetPassword/:token',resetPassword)
 
-
 passport.use(new facebookStrategy({
-    // pull in our app id and secret from our auth.js file
-    clientID        : "819489749010313",
-    clientSecret    : "8721121e098a09e2686b5965b3489958",
+    clientID        : process.env.CLIENT_ID_FB,
+    clientSecret    : process.env.CLIENT_SECRET_FB,
     callbackURL     : "http://localhost:3000/facebook/callback",
     profileFields: ['email']
 
