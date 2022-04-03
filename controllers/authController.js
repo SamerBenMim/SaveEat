@@ -48,30 +48,8 @@ exports.signup = catchAsync(async(req, res, next) => {
     var code = crypto.randomBytes(6).toString('hex');
     user.set({ code: code });
     await user.save();
-    const acsessToken = user.generetaAccessToken(code);
-    // var transporter = nodemailer.createTransport(smtpTransport({
-    //     service: 'gmail',
-    //     host: 'smtp.gmail.com',
-    //     auth: {
-    //         user: 'lilithsuccubus04@gmail.com',
-    //         pass: 'lilithhellwrath1204'
-    //     }
-    // }));
-    // var mailOptions = {
-    //     from: 'lilithsuccubus04@gmail.com',
-    //     to: user.email,
-    //     subject: 'Verification Email',
-    //     text: code
-    // };
-    // transporter.sendMail(mailOptions, function(error) {
-    //     if (error) {
-    //         res.json({
-    //             status: 'error',
-    //             error: "We couldn't send you a verification code try again"
+    const accessToken = user.generetaAccessToken(code);
 
-    //         })
-    //     }
-    // });
     try{
         await sendEmail({
             email:user.email,
@@ -133,6 +111,9 @@ exports.login = catchAsync(async(req, res, next) => {
     }
     //2) check if user exist
     const user = await User.findOne({ email: email, verified: true }).select('+password')
+    if(!user.password)
+    return next(new AppError('Incorrect email or password', 401))
+
         //3) check if pass is correct 
     if (!user || !await user.correctPassword(password, user.password)) {
         return next(new AppError('Incorrect email or password', 401))
@@ -186,7 +167,8 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
         await sendEmail({
             email: user.email,
             subject: 'Your pass reset token (valid for 10 min)',
-            message
+            message,
+            type:"passwordReset"
         })
 
         res.status(200).json({

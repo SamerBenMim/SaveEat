@@ -25,7 +25,10 @@ app.use(cors())
 const jwt = require('jsonwebtoken')
 
 
-if ((process.env.NODE_ENV === 'development')) app.use(morgan('dev'))
+if ((process.env.NODE_ENV === 'development')) app.use(morgan('dev'));
+
+
+
 app.get('/facebook/callback',
         passport.authenticate('facebook', {
             session:false,
@@ -33,6 +36,7 @@ app.get('/facebook/callback',
         }),(req, res) => {console.log("profile : ",req.user)
         const {email,role,id} = req.user
         const token = jwt.sign({ id,email,role}, process.env.JWT_SECRET, {
+
           expiresIn: process.env.JWT_EXPIRES_IN
       })
         res.status(200).json({
