@@ -29,7 +29,7 @@ router.get(
 router.post('/login', login)
 router.post('/verifyAccount', access, verifyAccount)
 router.post('/forgotPassword',forgotPassword)
-router.patch('/resetPassword/:token',resetPassword)
+router.get('/resetPassword/:token',resetPassword)
 
 passport.use(new facebookStrategy({
     clientID        : process.env.CLIENT_ID_FB,
@@ -72,7 +72,7 @@ passport.serializeUser(function(user, done) {
 //for sys admin
 router
     .route('/')
-    .get(auth,getAllUsers)
+    .get(getAllUsers)
 
 router
     .route('/:id')
