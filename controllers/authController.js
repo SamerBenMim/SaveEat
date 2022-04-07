@@ -133,6 +133,9 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
     if (!user) {
         return next(new AppError('Token is invalid or has expired ', 400))
     }
+
+console.log(req.body)
+
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
 
@@ -212,3 +215,6 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
 //       })
 //     })(req, res, next)
 //   }
+/*
+
+*/

@@ -29,7 +29,7 @@ router.get(
 router.post('/login', login)
 router.post('/verifyAccount', access, verifyAccount)
 router.post('/forgotPassword',forgotPassword)
-router.get('/resetPassword/:token',resetPassword)
+router.patch('/resetPassword/:token',resetPassword)
 
 passport.use(new facebookStrategy({
     clientID        : process.env.CLIENT_ID_FB,
