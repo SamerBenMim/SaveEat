@@ -22,7 +22,6 @@ const generateToken = id => {
 const createSendToken = (user, statusCode, res) => {
     const token = user.generetaAuthToken();
     user.password = undefined
-    console.log("user", user)
     res.status(statusCode).json({
         status: 'success',
         token,
@@ -51,18 +50,18 @@ exports.signup = catchAsync(async(req, res, next) => {
     await user.save();
     const accessToken = user.generetaAccessToken(code);
 
-    try{
+    try {
         await sendEmail({
-            email:user.email,
-            subject:'Verification Email (valid for 5 min)',
-            message:code,
-        }) 
+            email: user.email,
+            subject: 'Verification Email (valid for 5 min)',
+            message: code,
+        })
 
-    }catch(err){
+    } catch (err) {
 
-        return next(new AppError("there was an error sending the verification code. Try again later !",500))
+        return next(new AppError("there was an error sending the verification code. Try again later !", 500))
     }
-   
+
     user = _.pick(user, ['email', 'role', '_id']);
     return res.status(200).json({
         status: 'success',
@@ -89,7 +88,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
         const token = user.generetaAuthToken();
         res.status(200).json({
             status: 'success',
-            message : 'your account is verified', 
+            message: 'your account is verified',
             token,
             data: {
                 user
@@ -112,12 +111,24 @@ exports.login = catchAsync(async(req, res, next) => {
     }
     //2) check if user exist
     const user = await User.findOne({ email: email, verified: true }).select('+password')
-    if(!user.password)
-    return next(new AppError('Incorrect email or password', 401))
+    if (!user) {
+        res.status(200).json({
+            status: 'error',
+            error: "Incorrect Email or password !"
+        });
+    }
+    if (!user.password)
+        res.status(200).json({
+            status: 'error',
+            error: "Incorrect Email or password !"
+        });
 
-        //3) check if pass is correct 
+    //3) check if pass is correct 
     if (!user || !await user.correctPassword(password, user.password)) {
-        return next(new AppError('Incorrect email or password', 401))
+        res.status(200).json({
+            status: 'error',
+            error: "Incorrect Email or password !"
+        });
     }
 
     //4) send token to client
@@ -157,7 +168,10 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
         email: req.body.email
     })
     if (!user) {
-        return next(new AppError('there is no user with that email adress', 404))
+        res.status(200).json({
+            status: 'error',
+            error: "There is no account with this email address!"
+        });
     }
     // 2) generate the random reset token
     const resetToken = user.createPasswordResetToken();
@@ -173,7 +187,7 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
             email: user.email,
             subject: 'Your pass reset token (valid for 10 min)',
             message,
-            type:"passwordReset"
+            type: "passwordReset"
         })
 
         res.status(200).json({
@@ -192,7 +206,26 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
     }
 
 })
+exports.logout = catchAsync(async(req, res, next) => {
+    authToken = req.headers.authorization.split(' ')[1];
+    const blackList = new BlacklistedTokens({
+        token: authToken
+    });
+    await blackList.save();
+    res.status(200).json({
+        status: 'success',
+        message: 'logged out'
 
+    })
+})
+exports.test = catchAsync(async(req, res, next) => {
+
+    res.status(200).json({
+        status: 'success',
+        message: 'test'
+
+    })
+})
 
 
 
