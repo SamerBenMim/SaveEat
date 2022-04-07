@@ -32,6 +32,7 @@ const createSendToken = (user, statusCode, res) => {
 }
 
 exports.signup = catchAsync(async(req, res, next) => {
+    console.log(req.get('origin'))
     let user = new User(
         _.pick(req.body, ['email', 'password'])
     );
@@ -143,6 +144,9 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
     if (!user) {
         return next(new AppError('Token is invalid or has expired ', 400))
     }
+
+console.log(req.body)
+
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
 
@@ -158,6 +162,7 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
 
 
 exports.forgotPassword = catchAsync(async(req, res, next) => {
+    console.log("forgot")
     // 1) get user based on posted email
     const user = await User.findOne({
         email: req.body.email
@@ -173,8 +178,8 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     // 3) send tho token to that email
-    const resetURL = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to :${resetURL}.\n If you didn't forget your password please ignore this  `
+    const resetURL = `${req.get('origin')}/resetPassword/${resetToken}`
+    const message = `<div style="display:flex;align-items:center; flex-direction:column"> Forgot your password ? click: <a href="${resetURL}">HERE<a/>. <div>If you didn't forget your password please ignore this</div> </div> `
 
     try {
 
@@ -243,3 +248,6 @@ exports.test = catchAsync(async(req, res, next) => {
 //       })
 //     })(req, res, next)
 //   }
+/*
+
+*/
