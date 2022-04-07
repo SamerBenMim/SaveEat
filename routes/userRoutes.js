@@ -25,6 +25,7 @@ router.get(
     }
 )
 
+router.post('/auth', auth, test)
 router.get('/test', auth, test)
 router.post('/login', login)
 router.post('/logout', auth, logout)
