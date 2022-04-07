@@ -2,7 +2,6 @@ const express = require('express')
 const dotenv = require('dotenv');
 
 const router = express.Router();
-const { signup, forgotPassword, login, resetPassword, verifyAccount, fb_auth, fb_redirect } = require('../controllers/authController')
 const { UpdateEmail } = require('../controllers/userController')
 
 const { getAllUsers, getUser } = require('../controllers/userController')
