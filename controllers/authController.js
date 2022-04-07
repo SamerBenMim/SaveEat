@@ -32,7 +32,6 @@ const createSendToken = (user, statusCode, res) => {
 }
 
 exports.signup = catchAsync(async(req, res, next) => {
-    console.log(req.get('origin'))
     let user = new User(
         _.pick(req.body, ['email', 'password'])
     );
@@ -46,6 +45,7 @@ exports.signup = catchAsync(async(req, res, next) => {
     }
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
+    user.set({  verified:false });
     user.set({ code: code });
     await user.save();
     const accessToken = user.generetaAccessToken(code);
@@ -145,7 +145,6 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
         return next(new AppError('Token is invalid or has expired ', 400))
     }
 
-console.log(req.body)
 
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
@@ -162,7 +161,6 @@ console.log(req.body)
 
 
 exports.forgotPassword = catchAsync(async(req, res, next) => {
-    console.log("forgot")
     // 1) get user based on posted email
     const user = await User.findOne({
         email: req.body.email

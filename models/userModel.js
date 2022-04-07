@@ -50,14 +50,15 @@ userSchema.pre('save', async function(next) {
 
 userSchema.post('save', async function(next) {
     setTimeout(async() => {
+        console.log(this)
         if (this.verified === false) {
             await User.deleteOne({ email: this.email });
         }
-    }, 300000)
+    }, 40000)
 })
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { //we pass user password beaxause we can't use this.password bcause select is set false
-    return await bcrypt.compare(candidatePassword, userPassword) //compares password even 1 is a hash and 2 is a string
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { 
+    return await bcrypt.compare(candidatePassword, userPassword) 
 }
 
 userSchema.methods.createPasswordResetToken = function() {
@@ -86,6 +87,8 @@ userSchema.methods.generetaAccessToken = function(code) {
     });
     return token;
 }
-
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+} 
 const User = mongoose.model('User', userSchema)
 module.exports = User;
