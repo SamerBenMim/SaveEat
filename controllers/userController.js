@@ -31,3 +31,21 @@ exports.getUser = catchAsync(async(req,res)=>{
             }   
         })
 })
+
+exports.UpdateEmail = catchAsync(async(req,res)=>{ 
+    console.log(req.body.user);   
+
+//     const email = req.body.user.email;
+//     if(!user) {
+//     res.status(404).json({
+//         status:"fail",
+//         message:"no User found with that id"
+//     })
+//    }
+//     res.status(200).json(
+//         {status :'success', 
+//         data:{
+//             user
+//         }   
+//     })
+})

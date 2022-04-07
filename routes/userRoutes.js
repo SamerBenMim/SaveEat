@@ -3,6 +3,8 @@ const dotenv=require('dotenv');
 
 const router = express.Router();
 const {signup,forgotPassword,login,resetPassword,verifyAccount,fb_auth,fb_redirect} = require('../controllers/authController')
+const {UpdateEmail} = require('../controllers/userController')
+
 const {getAllUsers,getUser} = require('../controllers/userController')
 const { auth } = require('../Middleware/auth')
 const { access } = require('../Middleware/access')
@@ -30,6 +32,9 @@ router.post('/login', login)
 router.post('/verifyAccount', access, verifyAccount)
 router.post('/forgotPassword',forgotPassword)
 router.patch('/resetPassword/:token',resetPassword)
+router.patch('/updateEmail',auth,UpdateEmail)
+router.patch('/updatePassword',auth,UpdateEmail)
+
 
 passport.use(new facebookStrategy({
     clientID        : process.env.CLIENT_ID_FB,

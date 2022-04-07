@@ -165,7 +165,7 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
 
     // 3) send tho token to that email
     const resetURL = `${req.get('origin')}/resetPassword/${resetToken}`
-    const message = `<div>Forgot your password? Submit a PATCH request with your new password and passwordConfirm to :<a href="${resetURL}">here<a/>.\n If you didn't forget your password please ignore this </div> `
+    const message = `<div style="display:flex;align-items:center; flex-direction:column"> Forgot your password ? click: <a href="${resetURL}">HERE<a/>. <div>If you didn't forget your password please ignore this</div> </div> `
 
     try {
 
