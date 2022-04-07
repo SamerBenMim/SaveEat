@@ -2,15 +2,12 @@ const express = require('express')
 const dotenv = require('dotenv');
 
 const router = express.Router();
-<<<<<<< HEAD
-const {signup,forgotPassword,login,resetPassword,verifyAccount,fb_auth,fb_redirect} = require('../controllers/authController')
-const {UpdateEmail} = require('../controllers/userController')
+const { signup, forgotPassword, login, resetPassword, verifyAccount, fb_auth, fb_redirect } = require('../controllers/authController')
+const { UpdateEmail } = require('../controllers/userController')
 
-const {getAllUsers,getUser} = require('../controllers/userController')
-=======
-const { signup, forgotPassword, login, resetPassword, verifyAccount, logout, test, fb_auth, fb_redirect } = require('../controllers/authController')
 const { getAllUsers, getUser } = require('../controllers/userController')
->>>>>>> b487d15058a0dc42e81e6d121b8b25ff62e8b072
+
+const { signup, forgotPassword, login, resetPassword, verifyAccount, logout, test, fb_auth, fb_redirect } = require('../controllers/authController')
 const { auth } = require('../Middleware/auth')
 const { access } = require('../Middleware/access')
 const facebookStrategy = require("passport-facebook").Strategy
@@ -37,16 +34,11 @@ router.get('/test', auth, test)
 router.post('/login', login)
 router.post('/logout', auth, logout)
 router.post('/verifyAccount', access, verifyAccount)
-<<<<<<< HEAD
-router.post('/forgotPassword',forgotPassword)
-router.patch('/resetPassword/:token',resetPassword)
-router.patch('/updateEmail',auth,UpdateEmail)
-router.patch('/updatePassword',auth,UpdateEmail)
-
-=======
 router.post('/forgotPassword', forgotPassword)
 router.patch('/resetPassword/:token', resetPassword)
->>>>>>> b487d15058a0dc42e81e6d121b8b25ff62e8b072
+router.patch('/updateEmail', auth, UpdateEmail)
+router.patch('/updatePassword', auth, UpdateEmail)
+
 
 passport.use(new facebookStrategy({
         clientID: process.env.CLIENT_ID_FB,
@@ -88,11 +80,9 @@ passport.deserializeUser(function(user, done) {
 //for sys admin
 router
     .route('/')
-<<<<<<< HEAD
-    .get(getAllUsers)
-=======
-    .get(auth, getAllUsers)
->>>>>>> b487d15058a0dc42e81e6d121b8b25ff62e8b072
+
+
+.get(auth, getAllUsers)
 
 router
     .route('/:id')
