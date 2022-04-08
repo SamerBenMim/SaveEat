@@ -49,13 +49,24 @@ userSchema.pre('save', async function(next) {
 })
 
 userSchema.post('save', async function(next) {
+    const {email}=this
+    console.log(email)
     setTimeout(async() => {
-        console.log(this)
-        if (this.verified === false) {
-            await User.deleteOne({ email: this.email });
+        const us =await User.findOne({
+            email: email
+        }).select('+verified')
+        if ( us.verified===false) {
+            await User.deleteOne({ email: email });
         }
-    }, 40000)
+    }, 50000)
 })
+
+userSchema.pre('findOneAndUpdate', async function() {
+    console.log(this)
+    if (this._update.password) {
+        this._update.password = await bcrypt.hash( this._update.password, 12);
+    }
+     });
 
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { 
     return await bcrypt.compare(candidatePassword, userPassword) 
@@ -87,8 +98,6 @@ userSchema.methods.generetaAccessToken = function(code) {
     });
     return token;
 }
-function wait(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-} 
+
 const User = mongoose.model('User', userSchema)
 module.exports = User;

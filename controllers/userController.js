@@ -54,9 +54,13 @@ console.log(updatedUser)
         }   
     })
 })
+
+
+
+
 exports.updatePassword = catchAsync(async(req,res)=>{ 
     const {password,newPassword} = req.body;
-    const email = req.user;
+    const {email} = req.user;
     if(!password)   res.status(400).json({
         status:"fail",
         message:"provide your password"
@@ -83,7 +87,7 @@ exports.updatePassword = catchAsync(async(req,res)=>{
             error: "Incorrect password !"
         });
     }
-    const updatedUser = await User.findOneAndUpdate({"email":email},{"password":password},{new : true,runValidators:true})//new return the updated obj 
+    const updatedUser = await User.findOneAndUpdate({"email":email},{"password":newPassword},{new : true,runValidators:true})//new return the updated obj 
 
     if(!updatedUser) {
     res.status(500).json({
