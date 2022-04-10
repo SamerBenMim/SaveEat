@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     PasswordResetToken: String,
     PasswordResetExpires: Date,
     code: String,
+    newEmail: {
+        type: String,
+        lowercase: true,
+    },
     verified: {
         type: Boolean,
         default: false,
@@ -50,7 +54,6 @@ userSchema.pre('save', async function(next) {
 
 userSchema.post('save', async function(next) {
     const {email}=this
-    console.log(email)
     setTimeout(async() => {
         const us =await User.findOne({
             email: email
@@ -62,7 +65,6 @@ userSchema.post('save', async function(next) {
 })
 
 userSchema.pre('findOneAndUpdate', async function() {
-    console.log(this)
     if (this._update.password) {
         this._update.password = await bcrypt.hash( this._update.password, 12);
     }
