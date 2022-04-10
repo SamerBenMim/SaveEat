@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     PasswordResetToken: String,
     PasswordResetExpires: Date,
     code: String,
+    newEmail: {
+        type: String,
+        lowercase: true,
+    },
     verified: {
         type: Boolean,
         default: false,
@@ -49,15 +53,25 @@ userSchema.pre('save', async function(next) {
 })
 
 userSchema.post('save', async function(next) {
+    const {email}=this
     setTimeout(async() => {
-        if (this.verified === false) {
-            await User.deleteOne({ email: this.email });
+        const us =await User.findOne({
+            email: email
+        }).select('+verified')
+        if ( us.verified===false) {
+            await User.deleteOne({ email: email });
         }
-    }, 300000)
+    }, 50000)
 })
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { //we pass user password beaxause we can't use this.password bcause select is set false
-    return await bcrypt.compare(candidatePassword, userPassword) //compares password even 1 is a hash and 2 is a string
+userSchema.pre('findOneAndUpdate', async function() {
+    if (this._update.password) {
+        this._update.password = await bcrypt.hash( this._update.password, 12);
+    }
+     });
+
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { 
+    return await bcrypt.compare(candidatePassword, userPassword) 
 }
 
 userSchema.methods.createPasswordResetToken = function() {

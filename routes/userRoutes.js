@@ -2,9 +2,10 @@ const express = require('express')
 const dotenv = require('dotenv');
 
 const router = express.Router();
-const { UpdateEmail } = require('../controllers/userController')
+const {updateEmail,updatePassword,VerifyEmail} = require('../controllers/userController')
 
-const { getAllUsers, getUser } = require('../controllers/userController')
+const {getAllUsers,getUser} = require('../controllers/userController')
+
 
 const { signup, forgotPassword, login, resetPassword, verifyAccount, logout, test, fb_auth, fb_redirect } = require('../controllers/authController')
 const { auth } = require('../Middleware/auth')
@@ -21,7 +22,6 @@ router.get(
     "/auth/facebook/callback",
     passport.authenticate("facebook", { session: false, failureRedirect: "/" }),
     function(req, res) {
-        console.log("req", req.user)
         res.json({
             "user": req.user
         })
@@ -33,10 +33,13 @@ router.get('/test', auth, test)
 router.post('/login', login)
 router.post('/logout', auth, logout)
 router.post('/verifyAccount', access, verifyAccount)
-router.post('/forgotPassword', forgotPassword)
-router.patch('/resetPassword/:token', resetPassword)
-router.patch('/updateEmail', auth, UpdateEmail)
-router.patch('/updatePassword', auth, UpdateEmail)
+
+router.post('/forgotPassword',forgotPassword)
+router.patch('/resetPassword/:token',resetPassword)
+router.patch('/updateEmail',auth,updateEmail)
+router.patch('/verifyEmail',auth,VerifyEmail)
+router.patch('/updatePassword',auth,updatePassword)
+
 
 
 passport.use(new facebookStrategy({

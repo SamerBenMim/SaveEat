@@ -45,6 +45,7 @@ exports.signup = catchAsync(async(req, res, next) => {
     }
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
+    user.set({  verified : false });
     user.set({ code: code });
     await user.save();
     const accessToken = user.generetaAccessToken(code);
