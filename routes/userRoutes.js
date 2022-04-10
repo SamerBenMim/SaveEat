@@ -5,6 +5,8 @@ const router = express.Router();
 const {updateEmail,updatePassword,VerifyEmail} = require('../controllers/userController')
 
 const {getAllUsers,getUser} = require('../controllers/userController')
+
+
 const { signup, forgotPassword, login, resetPassword, verifyAccount, logout, test, fb_auth, fb_redirect } = require('../controllers/authController')
 const { auth } = require('../Middleware/auth')
 const { access } = require('../Middleware/access')
@@ -26,6 +28,7 @@ router.get(
     }
 )
 
+router.post('/auth', auth, test)
 router.get('/test', auth, test)
 router.post('/login', login)
 router.post('/logout', auth, logout)
@@ -79,7 +82,9 @@ passport.deserializeUser(function(user, done) {
 //for sys admin
 router
     .route('/')
-    .get(getAllUsers)
+
+
+.get(auth, getAllUsers)
 
 router
     .route('/:id')
