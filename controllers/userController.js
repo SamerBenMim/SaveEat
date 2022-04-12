@@ -130,14 +130,14 @@ exports.updatePassword = catchAsync(async(req,res,next)=>{
 )
 
 exports.updateLastName = catchAsync(async(req,res,next)=>{ 
-    const {LastName} = req.body;
+    const {lastName} = req.body;
     const {email} = req.user;
-    if(!LastName) return next(new AppError("provide your LastName", 200))
-    var updatedUser = await User.findOneAndUpdate({"email":email},{"LastName":LastName},{new : true,runValidators:true})//new return the updated obj 
+    if(!lastName) return next(new AppError("provide your lastName", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"lastName":lastName},{new : true,runValidators:true})//new return the updated obj 
     if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
     return  res.status(200).json(
         {status :'success', 
-        message:'LastName updated successfully',
+        message:'lastName updated successfully',
         data:{
             updatedUser
         }   
@@ -146,15 +146,62 @@ exports.updateLastName = catchAsync(async(req,res,next)=>{
 }
 )
 exports.updateFirstName = catchAsync(async(req,res,next)=>{ 
-    console.log("first")
-    const {FirstName} = req.body;
+    const {firstName} = req.body;
     const {email} = req.user;
-    if(!FirstName) return next(new AppError("provide your FirstName", 200))
-    var updatedUser = await User.findOneAndUpdate({"email":email},{"FirstName":FirstName},{new : true,runValidators:true})//new return the updated obj 
+    if(!firstName) return next(new AppError("provide your FirstName", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"firstName":firstName},{new : true,runValidators:true})//new return the updated obj 
     if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
     return  res.status(200).json(
         {status :'success', 
         message:'FirstName updated successfully',
+        data:{
+            updatedUser
+        }   
+    })
+    
+}
+)
+exports.updateAdress = catchAsync(async(req,res,next)=>{ 
+    const {adress} = req.body;
+    const {email} = req.user;
+    if(!adress) return next(new AppError("provide your Adress", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"adress":adress},{new : true,runValidators:true})//new return the updated obj 
+    if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
+    return  res.status(200).json(
+        {status :'success', 
+        message:'Adress updated successfully',
+        data:{
+            updatedUser
+        }   
+    })
+    
+}
+)
+exports.updateBirthday = catchAsync(async(req,res,next)=>{ 
+    const {birthday} = req.body;
+    const {email} = req.user;
+    if(!birthday) return next(new AppError("provide your Birthday", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"birthday":birthday},{new : true,runValidators:true})//new return the updated obj 
+    if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
+    return  res.status(200).json(
+        {status :'success', 
+        message:'Birthday updated successfully',
+        data:{
+            updatedUser
+        }   
+    })
+    
+}
+)
+exports.updatePhoneNumber = catchAsync(async(req,res,next)=>{ 
+    const {phoneNumber} = req.body;
+    const {email} = req.user;
+    if(!phoneNumber) return next(new AppError("provide your phoneNumber", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"phoneNumber":phoneNumber},{new : true,runValidators:true})//new return the updated obj 
+    if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
+    return  res.status(200).json(
+        {status :'success', 
+        message:'phoneNumber updated successfully',
         data:{
             updatedUser
         }   

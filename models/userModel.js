@@ -62,11 +62,21 @@ const userSchema = new mongoose.Schema({
         default: true,
         select: false
     },
-    LastName: {
+    lastName: {
         type: String,
     },
-    FirstName: {
+    firstName: {
         type: String,
+    },
+    adress: {
+        type: String,
+    },
+    birthday: {
+        type: Date,
+        format: "%d-%m-%Y"
+    },
+    phoneNumber: {
+        type: Number,
     },
 
 })
