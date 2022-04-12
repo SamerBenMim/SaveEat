@@ -61,7 +61,13 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
         select: false
-    }
+    },
+    LastName: {
+        type: String,
+    },
+    FirstName: {
+        type: String,
+    },
 
 })
 userSchema.pre('save', async function(next) {

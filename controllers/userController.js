@@ -128,3 +128,37 @@ exports.updatePassword = catchAsync(async(req,res,next)=>{
     
 }
 )
+
+exports.updateLastName = catchAsync(async(req,res,next)=>{ 
+    const {LastName} = req.body;
+    const {email} = req.user;
+    if(!LastName) return next(new AppError("provide your LastName", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"LastName":LastName},{new : true,runValidators:true})//new return the updated obj 
+    if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
+    return  res.status(200).json(
+        {status :'success', 
+        message:'LastName updated successfully',
+        data:{
+            updatedUser
+        }   
+    })
+    
+}
+)
+exports.updateFirstName = catchAsync(async(req,res,next)=>{ 
+    console.log("first")
+    const {FirstName} = req.body;
+    const {email} = req.user;
+    if(!FirstName) return next(new AppError("provide your FirstName", 200))
+    var updatedUser = await User.findOneAndUpdate({"email":email},{"FirstName":FirstName},{new : true,runValidators:true})//new return the updated obj 
+    if(!updatedUser) return next(new AppError("Something went wrong try later !", 500))
+    return  res.status(200).json(
+        {status :'success', 
+        message:'FirstName updated successfully',
+        data:{
+            updatedUser
+        }   
+    })
+    
+}
+)
