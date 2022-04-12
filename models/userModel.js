@@ -26,12 +26,31 @@ const userSchema = new mongoose.Schema({
 
 
     // passwordChangedAt: Date,
-    PasswordResetToken: String,
-    PasswordResetExpires: Date,
-    code: String,
+    PasswordResetToken: {
+        type:String,
+        select: false
+
+    },
+    PasswordResetExpires: {
+        type:Date,
+        select: false
+
+    },
+
+    code: {
+        type:String,
+        select: false
+    },
+    emailResetExpires:{
+        type:Date,
+        select: false
+    },
+
     newEmail: {
         type: String,
         lowercase: true,
+        select: false
+
     },
     verified: {
         type: Boolean,
@@ -86,7 +105,13 @@ userSchema.methods.createPasswordResetToken = function() {
     this.PasswordResetExpires = Date.now() + 10 * 60 * 1000; //10 min
     return resetToken;
 }
+userSchema.methods.createEmailResetCode = function() {
 
+    this.code = Math.floor(Math.random() * 1000000);
+
+    this.emailResetExpires = Date.now() + 10 * 60 * 1000; //10 min
+    return this.code;
+}
 userSchema.methods.generetaAuthToken = function() {
     const token = jwt.sign({ _id: this._id, role: this.role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN

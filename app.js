@@ -8,6 +8,7 @@ const UserRouter = require('./routes/userRoutes')
 const app = express();
 const cors = require('cors');
 const passport = require('passport')
+const globalErrorHandler = require("./Middleware/globalErrorHandler")
 
 app.use(passport.initialize());
 
@@ -177,6 +178,7 @@ app.all('*', (req, res, next) => {
     next(err);
 })
 
+app.use(globalErrorHandler)
 
 
 module.exports = app;
