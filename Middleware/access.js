@@ -1,4 +1,5 @@
 const catchAsync = require("./../utils/catchAsync");
+const User = require('./../models/userModel')
 const jwt = require('jsonwebtoken')
 const AppError = require('./../utils/appError')
 const _ = require('lodash');
@@ -16,7 +17,7 @@ exports.access = catchAsync(async(req, res, next) => {
 
     const blackListed = await BlacklistedTokens.findOne({ token: token });
     if (blackListed) {
-        return   next(new AppError("Access denied", 403))
+        return res.status(403).send("Access denied");
     }
     //3) send user and blacklist token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
