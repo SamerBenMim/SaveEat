@@ -23,10 +23,16 @@ exports.signup = catchAsync(async(req, res, next) => {
         _.pick(req.body, ['email', 'password'])
     );
     userExist = await User.findOne({ 'email': user.email });
-    if (userExist)  return next(new AppError("This email is already used", 200)) 
+    if (userExist) {
+        return res.status(200).json({
+            status: 'error',
+            error: "This email is already used"
+        })
+
+    }
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
-    user.set({  verified : false });
+    user.set({ verified: false });
     user.set({ code: code });
     await user.save();
     const accessToken = user.generetaAccessToken(code);
@@ -58,7 +64,7 @@ exports.signup = catchAsync(async(req, res, next) => {
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
     user = await User.findOne({ 'email': req.decoded.email });
-    if (! user) return next(new AppError("there is no user with this email adress", 404))
+    if (!user) return next(new AppError("there is no user with this email adress", 404))
 
     if (user.code == code) {
         accessToken = req.headers.access.split(' ')[1];
@@ -91,9 +97,9 @@ exports.login = catchAsync(async(req, res, next) => {
     const user = await User.findOne({ email: email, verified: true }).select('+password')
     if (!user) return next(new AppError("Incorrect Email or password ! ", 200))
     if (!user.password) return next(new AppError("your logged in with facebook ", 200))
-    //3) check if pass is correct 
+        //3) check if pass is correct 
     if (!user || !await user.correctPassword(password, user.password)) return next(new AppError("Incorrect Email or password ! ", 200))
-    //4) send token to client
+        //4) send token to client
     createSendToken(user, 200, res)
 })
 
@@ -104,7 +110,7 @@ exports.resetPassword = catchAsync(async(req, res, next) => {
     const user = await User.findOne({ PasswordResetToken: hashedToken, PasswordResetExpires: { $gt: Date.now() } }) // check also if the tokenResetPAss has expired
         // 2) if there is a user and token has not expired
     if (!user) return next(new AppError('Token is invalid or has expired ', 400))
-    
+
 
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
@@ -124,8 +130,8 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
     const user = await User.findOne({
         email: req.body.email
     })
-    if (!user)  return next(new AppError('There is no account with this email address!', 200))
-    // 2) generate the random reset token
+    if (!user) return next(new AppError('There is no account with this email address!', 200))
+        // 2) generate the random reset token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
     // 3) send tho token to that email
