@@ -50,10 +50,12 @@ userSchema.pre('save', async function(next) {
 
 userSchema.post('save', async function(next) {
     setTimeout(async() => {
-        if (this.verified === false) {
+        const user = await User.findOne({ email: this.email });
+        if (user.verified === false) {
             await User.deleteOne({ email: this.email });
         }
-    }, 300000)
+        console.log(user.verified)
+    }, 3000)
 })
 
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { //we pass user password beaxause we can't use this.password bcause select is set false
