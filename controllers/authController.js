@@ -37,11 +37,11 @@ exports.signup = catchAsync(async(req, res, next) => {
     );
     userExist = await User.findOne({ 'email': user.email });
     if (userExist) {
-        res.json({
+        return res.status(200).json({
             status: 'error',
             error: "This email is already used"
-
         })
+
     }
     // save user in the database
     var code = crypto.randomBytes(6).toString('hex');
