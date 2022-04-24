@@ -27,22 +27,22 @@ const userSchema = new mongoose.Schema({
 
     // passwordChangedAt: Date,
     PasswordResetToken: {
-        type:String,
+        type: String,
         select: false
 
     },
     PasswordResetExpires: {
-        type:Date,
+        type: Date,
         select: false
 
     },
 
     code: {
-        type:String,
+        type: String,
         select: false
     },
-    emailResetExpires:{
-        type:Date,
+    emailResetExpires: {
+        type: Date,
         select: false
     },
 
@@ -88,12 +88,12 @@ userSchema.pre('save', async function(next) {
 })
 
 userSchema.post('save', async function(next) {
-    const {email}=this
+    const { email } = this
     setTimeout(async() => {
-        const us =await User.findOne({
+        const us = await User.findOne({
             email: email
         }).select('+verified')
-        if ( us.verified===false) {
+        if (us.verified === false) {
             await User.deleteOne({ email: email });
         }
     }, 50000)
@@ -101,12 +101,12 @@ userSchema.post('save', async function(next) {
 
 userSchema.pre('findOneAndUpdate', async function() {
     if (this._update.password) {
-        this._update.password = await bcrypt.hash( this._update.password, 12);
+        this._update.password = await bcrypt.hash(this._update.password, 12);
     }
-     });
+});
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword) { 
-    return await bcrypt.compare(candidatePassword, userPassword) 
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+    return await bcrypt.compare(candidatePassword, userPassword)
 }
 
 userSchema.methods.createPasswordResetToken = function() {
