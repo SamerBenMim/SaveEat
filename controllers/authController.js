@@ -74,7 +74,8 @@ exports.signup = catchAsync(async(req, res, next) => {
 
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
-    user = await User.findOne({ 'email': req.decoded.email });
+    user = await User.findOne({ 'email': req.decoded.email }).select("+code");
+    console.log(user,code)
     if (user.code == code) {
         accessToken = req.headers.access.split(' ')[1];
         const blackList = new BlacklistedTokens({
@@ -84,7 +85,7 @@ exports.verifyAccount = catchAsync(async(req, res, next) => {
         await User.updateOne({ _id: user._id, email: user.email }, { verified: true }, { returnOriginal: false });
         await blackList.save();
         const token = user.generetaAuthToken();
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             message: 'your account is verified',
             token,
@@ -110,20 +111,20 @@ exports.login = catchAsync(async(req, res, next) => {
     //2) check if user exist
     const user = await User.findOne({ email: email, verified: true }).select('+password')
     if (!user) {
-        res.status(200).json({
+        return res.status(200).json({
             status: 'error',
             error: "Incorrect Email or password !"
         });
     }
     if (!user.password)
-        res.status(200).json({
+    return res.status(200).json({
             status: 'error',
             error: "Incorrect Email or password !"
         });
 
     //3) check if pass is correct 
     if (!user || !await user.correctPassword(password, user.password)) {
-        res.status(200).json({
+        return res.status(200).json({
             status: 'error',
             error: "Incorrect Email or password !"
         });
@@ -164,7 +165,7 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
         email: req.body.email
     })
     if (!user) {
-        res.status(200).json({
+        return res.status(200).json({
             status: 'error',
             error: "There is no account with this email address!"
         });
@@ -186,7 +187,7 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
             type: "passwordReset"
         })
 
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             message: 'token sent to email!'
 
@@ -207,14 +208,14 @@ exports.logout = catchAsync(async(req, res, next) => {
         token: authToken
     });
     await blackList.save();
-    res.status(200).json({
+   return res.status(200).json({
         status: 'success',
         message: 'logged out'
 
     })
 })
 exports.test = catchAsync(async(req, res, next) => {
-    res.status(200).json({
+    return res.status(200).json({
         status: 'success',
         message: 'test',
         user : req.user

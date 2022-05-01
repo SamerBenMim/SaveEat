@@ -37,8 +37,11 @@ const userSchema = new mongoose.Schema({
 
     },
 
-    code: String,
-    emailResetExpires: {
+    code: {
+        type: String,
+        select: false
+    },
+        emailResetExpires: {
         type: Date,
         select: false
     },
@@ -90,7 +93,7 @@ userSchema.post('save', async function(next) {
         const us = await User.findOne({
             email: email
         }).select('+verified')
-        if (us.verified === false) {
+        if (us&&us.verified === false) {
             await User.deleteOne({ email: email });
         }
     }, 300000)
@@ -113,9 +116,9 @@ userSchema.methods.createPasswordResetToken = function() {
     return resetToken;
 }
 userSchema.methods.createEmailResetCode = function() {
-
+    console.log("code done")
     this.code = Math.floor(Math.random() * 1000000);
-
+    
     this.emailResetExpires = Date.now() + 10 * 60 * 1000; //10 min
     return this.code;
 }
