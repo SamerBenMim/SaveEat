@@ -26,8 +26,8 @@ exports.auth = catchAsync(async(req, res, next) => {
     //const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
     try {
         const decoded = await jwt.verify(token, process.env.JWT_SECRET)
-
-
+        
+        
         if (decoded.type == "access") {
             return res.status(403).send({
                 status: "error",
