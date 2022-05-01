@@ -2,7 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv');
 
 const router = express.Router();
-const {updateEmail,updatePassword,VerifyEmail,updateLastName,updateFirstName,updateAdress,updateBirthday,updatePhoneNumber} = require('../controllers/userController')
+const {updateMe,updateEmail,updatePassword,VerifyEmail} = require('../controllers/userController')
 
 const {getAllUsers,getUser} = require('../controllers/userController')
 
@@ -34,11 +34,7 @@ router.post('/login', login)
 router.post('/logout', auth, logout)
 router.post('/verifyAccount', access, verifyAccount)
 
-router.patch('/updateLastName', auth, updateLastName)
-router.patch('/updateFirstName', auth, updateFirstName)
-router.patch('/updateBirthday', auth, updateBirthday)
-router.patch('/updateAdress', auth, updateAdress)
-router.patch('/updatePhoneNumber', auth, updatePhoneNumber)
+router.patch('/updateMe', auth, updateMe)
 
 router.post('/forgotPassword',forgotPassword)
 router.patch('/resetPassword/:token',resetPassword)

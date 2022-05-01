@@ -30,21 +30,21 @@ exports.getUser = catchAsync(async(req, res) => {
 })
 exports.updateEmail = catchAsync(async(req, res, next) => {
     const { email } = req.user;
-    const newEmail = req.body.email
-    const { password } = req.body;
-    if (!password) return next(new AppError("provide your password", 200))
-    if (!newEmail) return next(new AppError("provide a valid new email adress", 200))
+    const { password,newEmail } = req.body;
+    if (!password) return next(new AppError("provide your password", 400))
+    if (!newEmail) return next(new AppError("provide a valid new email adress", 400))
 
     const user = await User.findOne({ email: email, verified: true }).select('+password')
 
-    if (!user) return next(new AppError("something went wrong, please try later !", 200))
-    if (!user.password) return next(new AppError("you re logged in with facebook ! you can't change your email!", 200))
+    if (!user) return next(new AppError("something went wrong, please try later !", 400))
+    if (!user.password) return next(new AppError("you re logged in with facebook ! you can't change your email!", 400))
     if (!await user.correctPassword(password, user.password)) return next(new AppError("Incorrect password !", 403))
 
     try {
         const verifCode = user.createEmailResetCode()
+        user.set({ newEmail: newEmail  });
         await user.save({ validateBeforeSave: false });
-
+        console.log(user)
         await sendEmail({
             email: newEmail,
             subject: 'Verification Email (valid for 10 min)',
@@ -52,7 +52,7 @@ exports.updateEmail = catchAsync(async(req, res, next) => {
         })
 
     } catch (err) {
-        user.code = undefined;
+        console.log(err)
         user.emailResetExpires = undefined;
         await user.save({
             validateBeforeSave: false
@@ -74,10 +74,10 @@ exports.updateEmail = catchAsync(async(req, res, next) => {
 exports.VerifyEmail = catchAsync(async(req, res, next) => {
     const { code } = req.body;
     const { email } = req.user;
-    const user = await User.findOne({ email: email, verified: true }).select("+code")
+    const user = await User.findOne({ email: email, verified: true }).select("+newEmail").select("+code")
 
+    console.log("code",code,user.code)
     if (code * 1 == user.code * 1) {
-
         const updatedUser = await User.findOneAndUpdate({ "email": email, emailResetExpires: { $gt: Date.now() } }, { email: user.newEmail, newEmail: "" }, { new: true, runValidators: true })
         if (!updatedUser) return next(new AppError("something went wrong !", 500))
         user.code = undefined;
@@ -116,6 +116,7 @@ exports.updatePassword = catchAsync(async(req, res, next) => {
         token: authToken
     });
     await blackList.save();
+
     return res.status(200).json({
         status: 'success',
         message: 'password updated successfully',
@@ -128,75 +129,14 @@ exports.updatePassword = catchAsync(async(req, res, next) => {
 
 })
 
-exports.updateLastName = catchAsync(async(req, res, next) => {
-    const { lastName } = req.body;
+exports.updateMe = catchAsync(async(req, res, next) => {
+    const { phoneNumber,lastName,firstName,address,birthday } = req.body;
     const { email } = req.user;
-    if (!lastName) return next(new AppError("provide your lastName", 200))
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { "lastName": lastName }, { new: true, runValidators: true }) //new return the updated obj 
+    var updatedUser = await User.findOneAndUpdate({ "email": email }, { lastName,phoneNumber,lastName,address,firstName,birthday }, { new: true, runValidators: true }) //new return the updated obj 
     if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
     return res.status(200).json({
         status: 'success',
-        message: 'lastName updated successfully',
-        data: {
-            updatedUser
-        }
-    })
-
-})
-exports.updateFirstName = catchAsync(async(req, res, next) => {
-    const { firstName } = req.body;
-    const { email } = req.user;
-    if (!firstName) return next(new AppError("provide your FirstName", 200))
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { "firstName": firstName }, { new: true, runValidators: true }) //new return the updated obj 
-    if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
-    return res.status(200).json({
-        status: 'success',
-        message: 'FirstName updated successfully',
-        data: {
-            updatedUser
-        }
-    })
-
-})
-exports.updateAdress = catchAsync(async(req, res, next) => {
-    const { adress } = req.body;
-    const { email } = req.user;
-    if (!adress) return next(new AppError("provide your Adress", 200))
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { "adress": adress }, { new: true, runValidators: true }) //new return the updated obj 
-    if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
-    return res.status(200).json({
-        status: 'success',
-        message: 'Adress updated successfully',
-        data: {
-            updatedUser
-        }
-    })
-
-})
-exports.updateBirthday = catchAsync(async(req, res, next) => {
-    const { birthday } = req.body;
-    const { email } = req.user;
-    if (!birthday) return next(new AppError("provide your Birthday", 200))
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { "birthday": birthday }, { new: true, runValidators: true }) //new return the updated obj 
-    if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
-    return res.status(200).json({
-        status: 'success',
-        message: 'Birthday updated successfully',
-        data: {
-            updatedUser
-        }
-    })
-
-})
-exports.updatePhoneNumber = catchAsync(async(req, res, next) => {
-    const { phoneNumber } = req.body;
-    const { email } = req.user;
-    if (!phoneNumber) return next(new AppError("provide your phoneNumber", 200))
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { "phoneNumber": phoneNumber }, { new: true, runValidators: true }) //new return the updated obj 
-    if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
-    return res.status(200).json({
-        status: 'success',
-        message: 'phoneNumber updated successfully',
+        message: 'user updated successfully',
         data: {
             updatedUser
         }
