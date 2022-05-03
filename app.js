@@ -5,6 +5,7 @@ const xss = require('xss-clean')
 const hpp = require('hpp')
 const morgan = require('morgan')
 const UserRouter = require('./routes/userRoutes')
+const ItemRouter = require('./routes/itemRoutes')
 const app = express();
 const cors = require('cors');
 const passport = require('passport')
@@ -14,8 +15,8 @@ app.use(passport.initialize());
 
 app.use(helmet())
 app.use(express.json({ limit: '10kb' }))
-app.use(mongoSanitize()) 
-    app.use(xss())
+app.use(mongoSanitize())
+app.use(xss())
 app.use(hpp({ whitelist: [] }))
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
@@ -31,24 +32,25 @@ if ((process.env.NODE_ENV === 'development')) app.use(morgan('dev'));
 
 
 app.get('/facebook/callback',
-        passport.authenticate('facebook', {
-            session:false,
-            failureRedirect : '/failure'
-        }),(req, res) => {console.log("profile : ",req.user)
-        const {email,role,id} = req.user
-        const token = jwt.sign({ id,email,role}, process.env.JWT_SECRET, {
+    passport.authenticate('facebook', {
+        session: false,
+        failureRedirect: '/failure'
+    }), (req, res) => {
+        console.log("profile : ", req.user)
+        const { email, role, id } = req.user
+        const token = jwt.sign({ id, email, role }, process.env.JWT_SECRET, {
 
-          expiresIn: process.env.JWT_EXPIRES_IN
-      })
+            expiresIn: process.env.JWT_EXPIRES_IN
+        })
         res.status(200).json({
-                                 status: 'success',     
-                                 email : req.user.email,
-                                 role : req.user.role,
-                                 token
-                             });
-    
-    
-    }    );
+            status: 'success',
+            email: req.user.email,
+            role: req.user.role,
+            token
+        });
+
+
+    });
 
 
 
@@ -71,19 +73,19 @@ app.get('/facebook/callback',
 // // Call this from app.js using passportAuth.initPassport(app)
 // module.exports.initPassport = function (app) {
 //   app.use(passport.initialize());
-  
-  // passport.use('jwt', new JWTStrategy({
-  //   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  //   secretOrKey: process.env.JWT_SECRET // Specify a JWT secret in .env file
-  // },
-  //   function (jwtPayload, done) {
-  //     // find the user in db if needed.
-  //     // This functionality may be omitted if you store everything you'll need in JWT payload.
-  //     return done(null, jwtPayload);
-  //   }
-  // ));
 
-  // Passport Strategy for login via email
+// passport.use('jwt', new JWTStrategy({
+//   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+//   secretOrKey: process.env.JWT_SECRET // Specify a JWT secret in .env file
+// },
+//   function (jwtPayload, done) {
+//     // find the user in db if needed.
+//     // This functionality may be omitted if you store everything you'll need in JWT payload.
+//     return done(null, jwtPayload);
+//   }
+// ));
+
+// Passport Strategy for login via email
 //   passport.use('local',
 //     new LocalStrategy(
 //       {
@@ -167,10 +169,10 @@ app.get('/facebook/callback',
 
 
 
-app.get('/success', (req,res)=>res.send('success'));
-app.get('/failure', (req,res)=>res.send('failure'));
+app.get('/success', (req, res) => res.send('success'));
+app.get('/failure', (req, res) => res.send('failure'));
 app.use('/api/users', UserRouter)
-
+app.use('/api/items', ItemRouter)
 app.all('*', (req, res, next) => {
     const err = new Error(`can't find ${req.originalUrl}`)
     err.status = 'fail';
