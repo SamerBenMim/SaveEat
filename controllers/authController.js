@@ -75,7 +75,6 @@ exports.signup = catchAsync(async(req, res, next) => {
 exports.verifyAccount = catchAsync(async(req, res, next) => {
     const code = req.body.code;
     user = await User.findOne({ 'email': req.decoded.email }).select("+code");
-    console.log(user,code)
     if (user.code == code) {
         accessToken = req.headers.access.split(' ')[1];
         const blackList = new BlacklistedTokens({
@@ -117,7 +116,7 @@ exports.login = catchAsync(async(req, res, next) => {
         });
     }
     if (!user.password)
-    return res.status(200).json({
+        return res.status(200).json({
             status: 'error',
             error: "Incorrect Email or password !"
         });
@@ -208,7 +207,7 @@ exports.logout = catchAsync(async(req, res, next) => {
         token: authToken
     });
     await blackList.save();
-   return res.status(200).json({
+    return res.status(200).json({
         status: 'success',
         message: 'logged out'
 
@@ -218,6 +217,6 @@ exports.test = catchAsync(async(req, res, next) => {
     return res.status(200).json({
         status: 'success',
         message: 'test',
-        user : req.user
+        user: req.user
     })
 })
