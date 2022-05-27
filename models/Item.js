@@ -9,7 +9,7 @@ var itemSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['fresh', 'canned'],
+        enum: ['Fresh', 'Canned'],
     }
 })
 
