@@ -103,6 +103,17 @@ userSchema.methods.correctPassword = async function(candidatePassword, userPassw
     return await bcrypt.compare(candidatePassword, userPassword) //compares password even 1 is a hash and 2 is a string
 }
 
+
+// userSchema.virtual('orders',{ // THE NAME OF THE VIRTUAL FIELDS
+//     ref:'Order', // name of the model, 
+//     foreignField:'customer', // the reference of the current model in the other model //the name in the other model were this model is saved // connect 2models
+//     localField:'_id'  // the reference of the current id in the current model
+
+// })
+
+
+
+
 userSchema.methods.createPasswordResetToken = function() {
     const resetToken = crypto.randomBytes(32).toString('hex'); //create random token
     this.PasswordResetToken = crypto
