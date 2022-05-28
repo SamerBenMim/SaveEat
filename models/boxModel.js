@@ -9,7 +9,7 @@ const boxSchema = new mongoose.Schema({
 
     subCategory: {
         type: String,
-        required: [true, "please provide a category"],
+        required: [true, "please provide a subcategory"],
         lowercase: true,
     },
 
