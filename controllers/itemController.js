@@ -1,4 +1,4 @@
-const Item = require("../models/item");
+const Item = require("../models/Item");
 const catchAsync = require("./../utils/catchAsync")
 
 exports.getAllItems = catchAsync(async(req, res) => {
@@ -13,6 +13,7 @@ exports.getAllItems = catchAsync(async(req, res) => {
 
     })
 })
+
 
 exports.getItemsCategory = catchAsync(async(req, res) => {
     const { category } = req.params

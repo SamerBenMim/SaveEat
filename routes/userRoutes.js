@@ -44,6 +44,7 @@ router.patch('/updatePassword',auth,updatePassword)
 
 
 
+
 passport.use(new facebookStrategy({
         clientID: process.env.CLIENT_ID_FB,
         clientSecret: process.env.CLIENT_SECRET_FB,
