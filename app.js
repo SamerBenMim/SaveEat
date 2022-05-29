@@ -176,10 +176,13 @@ app.get('/success', (req, res) => res.send('success'));
 app.get('/failure', (req, res) => res.send('failure'));
 app.use('/api/users', UserRouter)
 app.use('/api/items', ItemRouter)
-app.use('/api/boxes', auth,
-isAdmin,
+app.use('/api/boxes', 
+// auth,
+// isAdmin,
 BoxRouter)
-app.use('/api/orders', auth,orderRoutes)
+app.use('/api/orders'
+, auth,
+orderRoutes)
 app.all('*', (req, res, next) => {
     const err = new Error(`can't find ${req.originalUrl}`)
     err.status = 'fail';

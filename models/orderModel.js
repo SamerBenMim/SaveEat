@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-   
     customer:{
         type : mongoose.Schema.ObjectId, ref: 'User',
         required: [true, "please provide a customer"],
 
+    },
+    total:{
+        type : Number,
     },
 
     customer_phone: {
@@ -32,7 +34,6 @@ const orderSchema = new mongoose.Schema({
 
 
 })
-
 
 
 const Order = mongoose.model('Order', orderSchema)

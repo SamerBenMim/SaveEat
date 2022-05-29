@@ -9,10 +9,10 @@ const Order = require("../models/orderModel");
 const catchAsync = require("./../utils/catchAsync")
 
 exports.addOrder = catchAsync(async(req, res, next) => {
-    const { boxes , customer_phone,customer_address } = req.body;
+    const { boxes , customer_phone,customer_address,total } = req.body;
     const customer = req.user.id
     
-    let order = new Order({customer,customer_phone, customer_address,boxes});
+    let order = new Order({customer,customer_phone, customer_address,boxes,total});
 
     await order.save({runValidators:false});
     res.status(200).json({
@@ -53,6 +53,18 @@ exports.declineOrder = catchAsync(async(req, res) => {
         status: 'success',
         data: {
             declinededOrder
+        }
+
+    })
+})
+
+exports.getMyOrder = catchAsync(async(req, res) => {
+    const customer = req.user.id
+    const myOrders = await Order.find({customer:customer})
+    res.status(200).json({
+        status: 'success',
+        data: {
+            myOrders
         }
 
     })
