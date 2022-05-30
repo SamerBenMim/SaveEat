@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-    customer:{
-        type : mongoose.Schema.ObjectId, ref: 'User',
+    customer: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
         required: [true, "please provide a customer"],
 
     },
-    total:{
-        type : Number,
+    total: {
+        type: Number,
     },
 
     customer_phone: {
@@ -20,15 +21,15 @@ const orderSchema = new mongoose.Schema({
         default: 0,
     },
 
-    status :{
+    status: {
         type: String,
-        default:"submitted",
-        enum: ['submitted', 'confirmed',"declined"],
+        default: "submitted",
+        enum: ['submitted', 'confirmed', "declined"],
     },
 
 
-    boxes: { 
-        type : [mongoose.Schema.ObjectId],
+    boxes: {
+        type: [mongoose.Schema.ObjectId],
         ref: 'Box',
     },
 
