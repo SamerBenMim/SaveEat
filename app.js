@@ -175,10 +175,9 @@ app.get('/facebook/callback',
 app.get('/success', (req, res) => res.send('success'));
 app.get('/failure', (req, res) => res.send('failure'));
 app.use('/api/users', UserRouter)
-app.use('/api/items', ItemRouter)
+app.use('/api/items',auth, ItemRouter)
 app.use('/api/boxes', 
-// auth,
-// isAdmin,
+auth,
 BoxRouter)
 app.use('/api/orders'
 , auth,
