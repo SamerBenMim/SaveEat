@@ -5,6 +5,7 @@ const AppError = require('./../utils/appError')
 const { promisify } = require('util');
 const BlacklistedTokens = require('./../models/BlacklistedTokensModel');
 exports.auth = catchAsync(async(req, res, next) => {
+
     //1) gettibg the token and check if it's there
     let token
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
