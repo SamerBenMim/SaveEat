@@ -30,7 +30,7 @@ exports.getUser = catchAsync(async(req, res) => {
 })
 exports.updateEmail = catchAsync(async(req, res, next) => {
     const { email } = req.user;
-    const { password,newEmail } = req.body;
+    const { password, newEmail } = req.body;
     if (!password) return next(new AppError("provide your password", 400))
     if (!newEmail) return next(new AppError("provide a valid new email adress", 400))
 
@@ -42,7 +42,7 @@ exports.updateEmail = catchAsync(async(req, res, next) => {
 
     try {
         const verifCode = user.createEmailResetCode()
-        user.set({ newEmail: newEmail  });
+        user.set({ newEmail: newEmail });
         await user.save({ validateBeforeSave: false });
         console.log(user)
         await sendEmail({
@@ -76,7 +76,7 @@ exports.VerifyEmail = catchAsync(async(req, res, next) => {
     const { email } = req.user;
     const user = await User.findOne({ email: email, verified: true }).select("+newEmail").select("+code")
 
-    console.log("code",code,user.code)
+    console.log("code", code, user.code)
     if (code * 1 == user.code * 1) {
         const updatedUser = await User.findOneAndUpdate({ "email": email, emailResetExpires: { $gt: Date.now() } }, { email: user.newEmail, newEmail: "" }, { new: true, runValidators: true })
         if (!updatedUser) return next(new AppError("something went wrong !", 500))
@@ -130,9 +130,9 @@ exports.updatePassword = catchAsync(async(req, res, next) => {
 })
 
 exports.updateMe = catchAsync(async(req, res, next) => {
-    const { phoneNumber,lastName,firstName,address,birthday } = req.body;
+    const { phone, lastName, firstName, address, birthday } = req.body;
     const { email } = req.user;
-    var updatedUser = await User.findOneAndUpdate({ "email": email }, { lastName,phoneNumber,lastName,address,firstName,birthday }, { new: true, runValidators: true }) //new return the updated obj 
+    var updatedUser = await User.findOneAndUpdate({ "email": email }, { lastName, phone, lastName, address, firstName, birthday }, { new: true, runValidators: true }) //new return the updated obj 
     if (!updatedUser) return next(new AppError("Something went wrong try later !", 500))
     return res.status(200).json({
         status: 'success',
