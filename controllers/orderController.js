@@ -1,10 +1,4 @@
-// confirm order
 
-// submit order
-
-// decline
-
-//list order //declined
 const Order = require("../models/orderModel");
 const catchAsync = require("./../utils/catchAsync")
 

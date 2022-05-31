@@ -73,3 +73,26 @@ exports.getMyDeals = catchAsync(async(req, res) => {
 
     })
 })
+
+exports.confirmDeal = catchAsync(async(req, res) => {
+    const {id} = req.params
+    const confirmedDeal = await Deal.findByIdAndUpdate(id, { status: "confirmed"}, { new: true, runValidators: true }) //new return the updated obj 
+    res.status(200).json({
+        status: 'success',
+        data: {
+            confirmedDeal
+        }
+
+    })
+})
+exports.declineDeal = catchAsync(async(req, res) => {
+    const {id} = req.params
+    const declinedDeal = await Deal.findByIdAndUpdate(id, { status: "declined"}, { new: true, runValidators: true })
+    res.status(200).json({
+        status: 'success',
+        data: {
+            declinedDeal
+        }
+
+    })
+})
