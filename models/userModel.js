@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: String,
     },
+    imageId: {
+        type: Number,
+        default: 1,
+    }
 
 })
 userSchema.pre('save', async function(next) {
