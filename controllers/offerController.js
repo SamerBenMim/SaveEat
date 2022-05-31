@@ -16,9 +16,9 @@ exports.getAllOffers = catchAsync(async(req, res) => {
 
 
 exports.addOffer = catchAsync(async(req, res, next) => {
-    const { restaurant, product,customer_phone ,customer_address,description,stock,old_price,new_price} = req.body;
+    const { restaurant, product,description,stock,old_price,new_price} = req.body;
 
-    let offer = new Offer({restaurant, product,customer_phone ,customer_address,description,stock,old_price,new_price});
+    let offer = new Offer({restaurant, product ,description,stock,old_price,new_price});
     await offer.save();
     res.status(200).json({
         status: 'success',
@@ -29,9 +29,9 @@ exports.addOffer = catchAsync(async(req, res, next) => {
 })
 exports.updateOffer= catchAsync(async(req, res, next) => {
     const {id} = req.params;
-    const { restaurant, product,customer_phone ,customer_address,description,stock,old_price,new_price} = req.body;
+    const { restaurant, product,description,stock,old_price,new_price} = req.body;
 
-    var updatedOffer = await Offer.findByIdAndUpdate(id, { restaurant, product,customer_phone ,customer_address,description,stock,old_price,new_price}, { new: true, runValidators: true }) 
+    var updatedOffer = await Offer.findByIdAndUpdate(id, { restaurant, product ,description,stock,old_price,new_price}, { new: true, runValidators: true }) 
     res.status(200).json({
         status: 'success',
         data: {

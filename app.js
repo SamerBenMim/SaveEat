@@ -9,6 +9,7 @@ const ItemRouter = require('./routes/itemRoutes')
 const BoxRouter = require('./routes/boxRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const offerRoutes = require('./routes/offerRoutes ')
+const dealRoutes = require('./routes/dealRoutes')
 const app = express();
 const cors = require('cors');
 const passport = require('passport')
@@ -180,6 +181,7 @@ app.use('/api/items',auth, ItemRouter)
 app.use('/api/offers',auth, offerRoutes)
 app.use('/api/boxes', auth,BoxRouter)
 app.use('/api/orders',auth,orderRoutes)
+app.use('/api/deals',auth,dealRoutes)
 app.all('*', (req, res, next) => {
     const err = new Error(`can't find ${req.originalUrl}`)
     err.status = 'fail';

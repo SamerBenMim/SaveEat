@@ -9,22 +9,13 @@ const offerSchema = new mongoose.Schema({
     product:{
         type: String,
         required: [true, "please provide a product"],
-        
-    },
 
-    customer_phone: {
-        type: String,
-        default: 0,
-    },
-
-    customer_address: {
-        type: String,
-        default: 0,
     },
 
     description :{
         type: String,
         required: [true, "please provide a description"],
+        trim:true,
 
     },
 
