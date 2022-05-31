@@ -1,4 +1,5 @@
 const Deal = require("../models/dealModel");
+const Offer = require("../models/offerModel");
 
 const catchAsync = require("../utils/catchAsync")
 
@@ -76,6 +77,9 @@ exports.getMyDeals = catchAsync(async(req, res) => {
 
 exports.confirmDeal = catchAsync(async(req, res) => {
     const {id} = req.params
+    const {offer_id}= req.body
+    if(offer_id)
+    await Offer.findByIdAndUpdate(offer_id, { $inc: { stock: -1 } }, { new: true, runValidators: true })
     const confirmedDeal = await Deal.findByIdAndUpdate(id, { status: "confirmed"}, { new: true, runValidators: true }) //new return the updated obj 
     res.status(200).json({
         status: 'success',
@@ -87,7 +91,10 @@ exports.confirmDeal = catchAsync(async(req, res) => {
 })
 exports.declineDeal = catchAsync(async(req, res) => {
     const {id} = req.params
-    const declinedDeal = await Deal.findByIdAndUpdate(id, { status: "declined"}, { new: true, runValidators: true })
+    const {offer_id}= req.body
+    if(offer_id)
+    await Offer.findByIdAndUpdate(offer_id, { $inc: { stock: 1 } }, { new: true, runValidators: true })
+    const declinedDeal = await Deal.findByIdAndUpdate(id, { status: "declined"  }, { new: true, runValidators: true })
     res.status(200).json({
         status: 'success',
         data: {

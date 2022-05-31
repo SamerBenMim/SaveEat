@@ -31,7 +31,7 @@ exports.getAllOrders = catchAsync(async(req, res) => {
 })
 exports.confirmOrder = catchAsync(async(req, res) => {
     const {id} = req.params
-    const confirmedOrder = await Order.findByIdAndUpdate(id, { status: "confirmed"}, { new: true, runValidators: true }) //new return the updated obj 
+    const confirmedOrder = await Order.findByIdAndUpdate(id, { status: "confirmed",$inc: { quantity: -1 }}, { new: true, runValidators: true }) //new return the updated obj 
     res.status(200).json({
         status: 'success',
         data: {
@@ -42,7 +42,7 @@ exports.confirmOrder = catchAsync(async(req, res) => {
 })
 exports.declineOrder = catchAsync(async(req, res) => {
     const {id} = req.params
-    const declinededOrder = await Order.findByIdAndUpdate(id, { status: "declined"}, { new: true, runValidators: true })
+    const declinededOrder = await Order.findByIdAndUpdate(id, { status: "declined",$inc: { quantity: 1 }}, { new: true, runValidators: true })
     res.status(200).json({
         status: 'success',
         data: {
